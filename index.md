@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Wedding Album
+title: Mobile Photos
 ---
 
 <h1 style="text-align: center;">📸 Mobile-Clicks</h1>
