@@ -26,6 +26,25 @@ title: Mobile Photos
 <script src="{{ site.baseurl }}/assets/js/meta.js"></script>
 
 <script>
+function renderButtons() {
+  const container = document.getElementById("album-buttons");
+  container.innerHTML = '';
+  folderList.forEach(folder => {
+    const btn = document.createElement("button");
+    btn.textContent = folder;
+    btn.onclick = () => {
+      filterByFolder(folder);
+      highlightButton(btn);
+    };
+    container.appendChild(btn);
+  });
+}
+
+function highlightButton(activeButton) {
+  const buttons = document.querySelectorAll("#album-buttons button");
+  buttons.forEach(btn => btn.style.opacity = "0.6");
+  activeButton.style.opacity = "1";
+}
 
 function showLightbox(html) {
   const lightbox = document.getElementById("lightbox");
@@ -69,17 +88,18 @@ function filterByFolder(folderName) {
     let mediaHTML = '';
 
     if (file.type === "image") {
-      mediaHTML = `<img src="${file.src}" alt="photo" style="cursor:zoom-in;" onclick="showLightbox('<img src=${file.src} style=\\'max-width:100%; max-height:100%\\'>')">`;
+      mediaHTML = `<a href="${file.src}" target="_blank"><img src="${file.src}" alt="photo" style="cursor: zoom-in;"></a>`;
     } else if (file.type === "video") {
       // Use fallback download link if playback fails (GitHub Pages limitation)
       mediaHTML = `
-        <video controls preload="metadata" style="width: 100%; border-radius: 10px; cursor:pointer;"
-          onclick="showLightbox('<video src=${file.src} controls autoplay style=\\'max-width:100%; max-height:100%\\'></video>')"
-          onerror="this.outerHTML='<a href=\'${file.src}\' class=\'download-button\'>Download Video</a>';">
-          <source src="${file.src}" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
-      `;
+  <a href="${file.src}" target="_blank">
+    <video muted preload="metadata" style="width: 100%; border-radius: 10px; cursor: pointer;" 
+      onerror="this.outerHTML='<a href=\'${file.src}\' class=\'download-button\'>Download Video</a>';">
+      <source src="${file.src}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </a>
+`;
     }
 
     box.innerHTML = `
