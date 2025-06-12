@@ -103,11 +103,11 @@ function filterByFolder(folderName) {
     }
 
     box.innerHTML = `
-      ${mediaHTML}
-      <div style="margin-top: 0.5rem;">
-        <a href="${file.src}" class="download-button" download>Download</a>
-      </div>
-    `;
+  ${mediaHTML}
+  <div class="center-download">
+    <a href="${file.src}" class="download-button" download>Download</a>
+  </div>
+`;
 
     if (file.orientation === "landscape") {
       galleryLandscape.appendChild(box);
