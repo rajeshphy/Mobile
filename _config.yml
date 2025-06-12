@@ -1,0 +1,6 @@
+title: "Mobile Photos"
+description: "Auto-displaying all images from assets folder"
+markdown: kramdown
+exclude: ["README.md"]
+baseurl: "/Mobile"   # Replace this with your actual GitHub repo name
+

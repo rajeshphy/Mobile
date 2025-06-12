@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title }}</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fdf6e3, #ffe0ec);
+      color: #333;
+    }
+
+    .center-container {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 1.5rem;
+    }
+
+    .login-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      max-width: 90%;
+      width: 400px;
+      text-align: center;
+    }
+
+    .login-card h2 {
+      margin-bottom: 1.25rem;
+      font-size: 1.5rem;
+      color: #e91e63;
+    }
+
+    .login-card input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .login-card input[type="password"]:focus {
+      border-color: #e91e63;
+    }
+
+    .login-card button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .login-card button:hover {
+      background-color: #c2185b;
+    }
+
+    .login-card p#error-msg {
+      margin-top: 0.75rem;
+      color: red;
+      font-size: 0.9rem;
+    }
+
+    #protected-content {
+      display: none;
+      padding: 1rem;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .photo-box img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .photo-box img:hover {
+      transform: scale(1.05);
+    }
+
+    .download-button {
+      display: inline-block;
+      margin-top: 0.5rem;
+      background: #4CAF50;
+      color: white;
+      padding: 6px 12px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+
+    .download-button:hover {
+      background: #388e3c;
+    }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 1.5rem;
+      }
+
+      .login-card h2 {
+        font-size: 1.3rem;
+      }
+
+      .login-card button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="password-screen" class="center-container">
+    <div class="login-card">
+      <h2>🔐 Private Access</h2>
+      <input type="password" id="password-input" placeholder="Enter password" autocomplete="off" />
+      <button onclick="checkPassword()">Unlock</button>
+      <p id="error-msg"></p>
+    </div>
+  </div>
+
+  <div id="protected-content">
+    {{ content }}
+  </div>
+
+  <script>
+    const correctPassword = "akra"; // Change your password here
+
+    function checkPassword() {
+      const input = document.getElementById("password-input").value.trim();
+      const errorMsg = document.getElementById("error-msg");
+
+      if (input === correctPassword) {
+        document.getElementById("password-screen").style.display = "none";
+        document.getElementById("protected-content").style.display = "block";
+      } else {
+        errorMsg.textContent = "❌ Incorrect password. Please try again.";
+      }
+    }
+
+    // Press Enter to submit
+    document.getElementById("password-input").addEventListener("keyup", function (event) {
+      if (event.key === "Enter") {
+        checkPassword();
+      }
+    });
+  </script>
+</body>
+</html>
