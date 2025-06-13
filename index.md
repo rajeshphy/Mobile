@@ -75,7 +75,10 @@ function filterByFolder(folderName) {
   galleryLandscape.innerHTML = '';
   galleryPortrait.innerHTML = '';
 
-  const filtered = allFiles.filter(file => file.folder === folderName);
+  const filtered = allFiles
+    .filter(file => file.folder === folderName)
+    .sort((a, b) => a.name.localeCompare(b.name));  // ✅ Sort by name
+
   if (filtered.length === 0) {
     galleryLandscape.innerHTML = `<p>No media found in <strong>${folderName}</strong>.</p>`;
     return;
@@ -90,24 +93,23 @@ function filterByFolder(folderName) {
     if (file.type === "image") {
       mediaHTML = `<a href="${file.src}" target="_blank"><img src="${file.src}" alt="photo" style="cursor: zoom-in;"></a>`;
     } else if (file.type === "video") {
-      // Use fallback download link if playback fails (GitHub Pages limitation)
       mediaHTML = `
-  <a href="${file.src}" target="_blank">
-    <video muted preload="metadata" style="width: 100%; border-radius: 10px; cursor: pointer;" 
-      onerror="this.outerHTML='<a href=\'${file.src}\' class=\'download-button\'>Download Video</a>';">
-      <source src="${file.src}" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </a>
-`;
+        <a href="${file.src}" target="_blank">
+          <video muted preload="metadata" style="width: 100%; border-radius: 10px; cursor: pointer;" 
+            onerror="this.outerHTML='<a href=\'${file.src}\' class=\'download-button\'>Download Video</a>';">
+            <source src="${file.src}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </a>
+      `;
     }
 
     box.innerHTML = `
-  ${mediaHTML}
-  <div class="center-download">
-    <a href="${file.src}" class="download-button" download>Download</a>
-  </div>
-`;
+      ${mediaHTML}
+      <div class="center-download">
+        <a href="${file.src}" class="download-button" download>Download</a>
+      </div>
+    `;
 
     if (file.orientation === "landscape") {
       galleryLandscape.appendChild(box);
