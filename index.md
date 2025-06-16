@@ -8,21 +8,25 @@ title: Mobile Photos
 <!-- Album selection buttons -->
 <div id="album-buttons" style="margin: 1.5rem 0; text-align: center;"></div>
 
-
 <!-- Landscape media -->
 <div class="gallery" id="gallery-landscape"></div>
 
 <!-- Portrait media -->
 <div class="gallery" id="gallery-portrait"></div>
 
-<!-- Modal for viewing media -->
+<!-- Lightbox for larger view (optional) -->
 <div id="lightbox" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
   background:rgba(0,0,0,0.9); z-index:1000; justify-content:center; align-items:center;">
   <span style="position:absolute; top:20px; right:30px; font-size:2rem; color:white; cursor:pointer;" onclick="closeLightbox()">&times;</span>
   <div id="lightbox-content" style="max-width: 90%; max-height: 90%;"></div>
 </div>
 
-<!-- Load pre-generated media data -->
+<!-- Inject Jekyll site.baseurl into JS -->
+<script>
+  const baseurl = "{{ site.baseurl }}";
+</script>
+
+<!-- Load meta.js -->
 <script src="{{ site.baseurl }}/assets/js/meta.js"></script>
 
 <script>
@@ -46,29 +50,10 @@ function highlightButton(activeButton) {
   activeButton.style.opacity = "1";
 }
 
-function showLightbox(html) {
-  const lightbox = document.getElementById("lightbox");
-  const content = document.getElementById("lightbox-content");
-  content.innerHTML = html;
-  lightbox.style.display = "flex";
-}
-
 function closeLightbox() {
   document.getElementById("lightbox").style.display = "none";
 }
 
-// Dynamically generate album buttons
-function renderButtons() {
-  const container = document.getElementById("album-buttons");
-  folderList.forEach(folder => {
-    const btn = document.createElement("button");
-    btn.textContent = folder;
-    btn.onclick = () => filterByFolder(folder);
-    container.appendChild(btn);
-  });
-}
-
-// Filter and display media for selected folder
 function filterByFolder(folderName) {
   const galleryLandscape = document.getElementById("gallery-landscape");
   const galleryPortrait = document.getElementById("gallery-portrait");
@@ -77,7 +62,7 @@ function filterByFolder(folderName) {
 
   const filtered = allFiles
     .filter(file => file.folder === folderName)
-    .sort((a, b) => a.name.localeCompare(b.name));  // ✅ Sort by name
+    .sort((a, b) => a.name?.localeCompare?.(b.name) || 0);
 
   if (filtered.length === 0) {
     galleryLandscape.innerHTML = `<p>No media found in <strong>${folderName}</strong>.</p>`;
@@ -88,16 +73,19 @@ function filterByFolder(folderName) {
     const box = document.createElement('div');
     box.className = 'photo-box';
 
+    const fullSrc = baseurl + file.src;
     let mediaHTML = '';
 
     if (file.type === "image") {
-      mediaHTML = `<a href="${file.src}" target="_blank"><img src="${file.src}" alt="photo" style="cursor: zoom-in;"></a>`;
+      mediaHTML = `<a href="${fullSrc}" target="_blank">
+        <img src="${fullSrc}" alt="photo" style="cursor: zoom-in;" >
+      </a>`;
     } else if (file.type === "video") {
       mediaHTML = `
-        <a href="${file.src}" target="_blank">
-          <video muted preload="metadata" style="width: 100%; border-radius: 10px; cursor: pointer;" 
-            onerror="this.outerHTML='<a href=\'${file.src}\' class=\'download-button\'>Download Video</a>';">
-            <source src="${file.src}" type="video/mp4">
+        <a href="${fullSrc}" target="_blank">
+          <video muted preload="metadata" style="width: 100%; border-radius: 10px; cursor: pointer;"
+            onerror="this.outerHTML='<a href=\'${fullSrc}\' class=\'download-button\'>Download Video</a>';">
+            <source src="${fullSrc}" type="video/mp4">
             Your browser does not support the video tag.
           </video>
         </a>
@@ -107,7 +95,7 @@ function filterByFolder(folderName) {
     box.innerHTML = `
       ${mediaHTML}
       <div class="center-download">
-        <a href="${file.src}" class="download-button" download>Download</a>
+        <a href="${fullSrc}" class="download-button" download>Download</a>
       </div>
     `;
 
@@ -119,6 +107,6 @@ function filterByFolder(folderName) {
   });
 }
 
-// Initialize on page load
+// Initialize
 renderButtons();
 </script>

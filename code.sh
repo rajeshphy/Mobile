@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # Generates meta.js from assets/albums folder
-# Assumes baseurl is "Mobile"
+# Assumes paths are relative to the site root (no BASEURL prefix)
 # Requires: ImageMagick (identify) and FFmpeg (ffprobe)
 
-BASEURL="Mobile"
 OUTFILE="assets/js/meta.js"
 mkdir -p "$(dirname "$OUTFILE")"
 
-echo "Generating $OUTFILE with baseurl: /$BASEURL ..."
+echo "Generating $OUTFILE with no baseurl..."
 
 # Header
 {
@@ -28,7 +27,7 @@ TMP_ENTRIES=$(mktemp)
 # Image processing
 find assets/albums -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) | sort | while read file; do
   folder=$(basename "$(dirname "$file")")
-  relpath="$file"
+  relpath="/$file"
   type="image"
 
   dimensions=$(identify -format "%w %h" "$file" 2>/dev/null)
@@ -46,13 +45,13 @@ find assets/albums -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png
     orientation="portrait"
   fi
 
-  echo "  { folder: \"$folder\", src: \"/$BASEURL/$relpath\", type: \"$type\", orientation: \"$orientation\" }," >> "$TMP_ENTRIES"
+  echo "  { folder: \"$folder\", src: \"$relpath\", type: \"$type\", orientation: \"$orientation\" }," >> "$TMP_ENTRIES"
 done
 
 # Video processing
 find assets/albums -type f -iname '*.mp4' | sort | while read file; do
   folder=$(basename "$(dirname "$file")")
-  relpath="$file"
+  relpath="/$file"
   type="video"
 
   dimensions=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "$file" 2>/dev/null)
@@ -70,14 +69,13 @@ find assets/albums -type f -iname '*.mp4' | sort | while read file; do
     orientation="portrait"
   fi
 
-  echo "  { folder: \"$folder\", src: \"/$BASEURL/$relpath\", type: \"$type\", orientation: \"$orientation\" }," >> "$TMP_ENTRIES"
+  echo "  { folder: \"$folder\", src: \"$relpath\", type: \"$type\", orientation: \"$orientation\" }," >> "$TMP_ENTRIES"
 done
 
-# Trim trailing comma (optional but good practice)
+# Trim trailing comma and finalize
 sed '$ s/,$//' "$TMP_ENTRIES" >> "$OUTFILE"
 rm "$TMP_ENTRIES"
 
-# Close the array
 echo "];" >> "$OUTFILE"
 
-echo "✅ Done. meta.js has been generated with folderList and allFiles."
+echo "✅ Done. meta.js has been generated without baseurl prefix."
